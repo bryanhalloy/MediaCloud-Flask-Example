@@ -1,6 +1,8 @@
 Flask Example - MediaCloud Client App
 =====================================
 
+Partnered with Gal Antonovsky and Arvil Nagpal for this exercise. 
+
 Small example Flask applicaton for the MAS.500 course.
 
 Installation

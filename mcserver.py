@@ -19,6 +19,8 @@ logging.info("Starting the MediaCloud example Flask app!")
 # clean a mediacloud api client
 mc = mediacloud.api.MediaCloud( config.get('mediacloud','api_key') )
 
+
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -28,11 +30,35 @@ def home():
 @app.route("/search",methods=['POST'])
 def search_results():
     keywords = request.form['keywords']
-    now = datetime.datetime.now()
-    results = mc.sentenceCount(keywords,
-        solr_filter=[mc.publish_date_query( datetime.date( 2015, 1, 1), 
-                                            datetime.date( now.year, now.month, now.day) ),
-                     'media_sets_id:1' ])
+    
+    #user inputs start and end dates
+    year_start = request.form['year_start']
+    year_start = int(year_start)
+    month_start = request.form['month_start']
+    month_start = int(month_start)
+    day_start = request.form['day_start']
+    day_start = int(day_start)
+    
+    year_end = request.form['year_end']
+    year_end = int(year_end)
+    month_end = request.form['month_end']
+    month_end = int(month_end)
+    day_end = request.form['day_end']
+    day_end = int(day_end)    
+    
+    date_start = datetime.date( year_start, month_start, day_start)
+    date_end = datetime.date( year_end, month_end, day_end)   
+
+   #fetch results
+    results_split = mc.sentenceCount(keywords,
+        solr_filter=[mc.publish_date_query( date_start, date_end ),
+                     'media_sets_id:1' ], split = 1)
+    results_split = results_split.items()
+    
+    
+    results= mc.sentenceCount(keywords,
+        solr_filter=[mc.publish_date_query( date_start, date_end ),
+                     'media_sets_id:1' ])    
     return render_template("search-results.html", 
         keywords=keywords, sentenceCount=results['count'] )
 
